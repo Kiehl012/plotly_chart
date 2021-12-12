@@ -12,7 +12,8 @@ function init() {
         .text(sample)
         .property("value", sample);
     });
-
+  d3.json("samples.json").then((data) => {
+      console.log(data)});
     // Use the first sample from the list to build the initial plots
     var firstSample = sampleNames[0];
     buildCharts(firstSample);
@@ -58,30 +59,62 @@ function buildCharts(sample) {
   // 2. Use d3.json to load and retrieve the samples.json file 
   d3.json("samples.json").then((data) => {
     // 3. Create a variable that holds the samples array. 
-
+    var allSamples = data.samples
     // 4. Create a variable that filters the samples for the object with the desired sample number.
-
+    var filteredSamples = allSamples.filter(sampleAttribute => sampleAttribute.id == sample)
     //  5. Create a variable that holds the first sample in the array.
-
-
+    var singleSample = filteredSamples[0]
     // 6. Create variables that hold the otu_ids, otu_labels, and sample_values.
-
-
+    var otuIDs = singleSample.otu_ids
+    var otuLabels = singleSample.otu_labels
+    var sampleValues = singleSample.sample_values
     // 7. Create the yticks for the bar chart.
     // Hint: Get the the top 10 otu_ids and map them in descending order  
     //  so the otu_ids with the most bacteria are last. 
-
-    var yticks = 
-
-    // 8. Create the trace for the bar chart. 
-    var barData = [
-      
-    ];
-    // 9. Create the layout for the bar chart. 
+    Values = sampleValues.slice(0,10).reverse()
+    IDs = otuIDs.slice(0,10).map(item => `OTU ${item} `).reverse()
+    console.log(IDs)
+    // // 8. Create the trace for the bar chart. 
+    var barData = [{
+      x: Values,
+      y: IDs,
+      type:'bar',
+      orientation: 'h'
+    }];
+    // // 9. Create the layout for the bar chart. 
     var barLayout = {
-     
+      title: 'Top 10 Bacteria Cultures Found'
+  }
+    // // 10. Use Plotly to plot the data with the layout. 
+    Plotly.newPlot("bar", barData, barLayout);
+   
+    // 1. Create the trace for the bubble chart.
+    xvalues = otuIDs.reverse()
+    yvalues = sampleValues.reverse()
+    sizes = yvalues.map(item => item*(.3*item))
+    bubbleText = otuLabels.reverse()
+    var bubbleData = [{
+      x: xvalues,
+      y: yvalues,
+      text: bubbleText,
+      mode: 'markers',
+      marker: {
+        sizemode: 'area',
+        size: sizes,
+        color: xvalues,
+        colorscale: 'Earth'
+      }
+    }];
+    // 2. Create the layout for the bubble chart.
+    var bubbleLayout = {
+      title: 'Bacteria Cultures Per Sample',
+      yaxis: {
+        range: [0,250]
+      },
+      showlegend: false,
     };
-    // 10. Use Plotly to plot the data with the layout. 
-    
+
+    // 3. Use Plotly to plot the data with the layout.
+    Plotly.newPlot("bubble", bubbleData, bubbleLayout); 
   });
-}
+};
