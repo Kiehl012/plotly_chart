@@ -2,7 +2,7 @@ function init() {
   // Grab a reference to the dropdown select element
   var selector = d3.select("#selDataset");
 
-  // Use the list of sample names to populate the select options
+  // Use the list of sample names to populate the selected options
   d3.json("samples.json").then((data) => {
     var sampleNames = data.names;
 
@@ -41,11 +41,10 @@ function buildMetadata(sample) {
     // Use d3 to select the panel with id of `#sample-metadata`
     var PANEL = d3.select("#sample-metadata");
 
-    // Use `.html("") to clear any existing metadata
+    // clear any existing metadata
     PANEL.html("");
 
     // Use `Object.entries` to add each key and value pair to the panel
-    // Hint: Inside the loop, you will need to use d3 to append new
     // tags for each key-value in the metadata.
     Object.entries(result).forEach(([key, value]) => {
       PANEL.append("h6").text(`${key.toUpperCase()}: ${value}`);
@@ -69,7 +68,6 @@ function buildCharts(sample) {
     var otuLabels = singleSample.otu_labels
     var sampleValues = singleSample.sample_values
     // 7. Create the yticks for the bar chart.
-    // Hint: Get the the top 10 otu_ids and map them in descending order  
     //  so the otu_ids with the most bacteria are last. 
     Values = sampleValues.slice(0,10).reverse()
     IDs = otuIDs.slice(0,10).map(item => `OTU ${item} `).reverse()
